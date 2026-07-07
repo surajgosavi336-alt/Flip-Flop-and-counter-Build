@@ -1,0 +1,68 @@
+`timescale 1ns/1ps
+
+module test;
+
+reg clk;
+reg D;
+reg reset;
+
+wire Q;
+wire [3:0] count;
+
+// Instantiate D Flip-Flop
+d_flipflop dff(
+    .clk(clk),
+    .D(D),
+    .Q(Q)
+);
+
+// Instantiate 4-bit Counter
+up_counter counter(
+    .clk(clk),
+    .reset(reset),
+    .count(count)
+);
+
+// Clock Generation
+always #5 clk = ~clk;
+
+initial
+begin
+    // Generate waveform
+    $dumpfile("dump.vcd");
+    $dumpvars(0, test);
+
+    clk = 0;
+    D = 0;
+    reset = 1;
+
+    #10;
+    reset = 0;
+
+    D = 1;
+    #10;
+
+    D = 0;
+    #10;
+
+    D = 1;
+    #10;
+
+    D = 1;
+    #10;
+
+    D = 0;
+    #20;
+
+    $finish;
+end
+
+// Display values
+initial
+begin
+    $display("Time\tClk\tD\tQ\tCount");
+    $monitor("%0t\t%b\t%b\t%b\t%b",
+             $time, clk, D, Q, count);
+end
+
+endmodule
